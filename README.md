@@ -31,11 +31,45 @@ If the overall success rate is still lower than the threshold after using the fo
 #### Time
 In this scenario we don't need to consider time.
 
-### Scenario 2: Alternative Flow
+### Scenario 2: Alternative Parallel Flow
 
-![Scenario 2](./scenario2.jpg)
+![Scenario 2](./scenario2.png)
 
-Alternative flow is a task that retrive data from multiply source. If one of these stages succeed, all other parallel tasks will stop. 
+Alternative parallel flow is a component that retrive data from multiply microservice. If one of these microservices succeed, all other parallel microservices will stop. 
 
 #### Success rate
-For this task, if we only assign one person for each stage, the overall success rate will be 100 - (100 - 50) * (100 - 75)% = 87.5%.
+For this task, if we only assign one person for each microservice, the overall success rate will be 100 - (100 - 25) * (100 - 40)% = 55%.
+
+#### Cost
+Depends on the number of people to execute them. I will use a Knapsack algorithm to find the lowest cost. Iterate all parallel microservices and compute (increased success rate/increased cost) after asigning one more people for this microservice. Then select the lowest one to assign. Until the overall success rate is reached. This is not efficient but it won't cost too much time.
+
+#### Time
+The total time depends on the longest microservice.
+
+### Scenario 3: Required Parallel Flow
+
+![Scenario 3](./scenario3.jpg)
+
+Required parallel flow is a component that require data from every parallel microservices. If any one of microservices fails, the whole task fails. 
+
+#### Success rate 
+It is smiliar to the scenario 1. We need to guarentee the success rate of every microservice is higher than the threshold. The overall success rate of this flow is 50% * 75% = 37.5%. We still use N = ceilling(ln(1 - T)/ln(1 - S)) to assign people first. Then approach the threshold by Knapsack.
+
+#### Cost
+Use Knapsack to optimize.
+
+#### Time
+The total time depends on the longest microservice.
+
+### Possibility Distribution
+
+![Get Tempreture](./getTemp.png)
+
+At the end, I will give a possibility distribution. 
+
+* 50%, 1s, $1
+* 37.5%, 3s, $3
+* 6.25%, 4s, $2
+* 6.25%, fail
+
+The first possiblity is the success rate of the microservice nearby sensor. If it fails, we will start the parallel microservices. I will first calculate the possibity of the shortest microservice, because it ends first. If it fails, calculate the rest microservices with the fail rate. If there are some microservices has smiliar execution time, I will calculate them as one overall success rate.
