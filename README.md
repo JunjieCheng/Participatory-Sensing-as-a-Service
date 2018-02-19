@@ -72,4 +72,6 @@ At the end, I will give a possibility distribution.
 * 6.25%, 4s, $2
 * 6.25%, fail
 
+In this case, I assume that the failure of execution will cost time but not cost money.
+
 The first possiblity is the success rate of the microservice nearby sensor. If it fails, we will start the parallel microservices. I will first calculate the possibity of the shortest microservice, because it ends first. If it fails, calculate the rest microservices with the fail rate. If there are some microservices has smiliar execution time, I will calculate them as one overall success rate.
