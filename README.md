@@ -16,6 +16,26 @@ Then I will use some examples to explain.
 
 ![Scenario 1](https://github.com/JunjieCheng/SLA/blob/master/scenario1.png)
 
-Linear flow is simply consective tasks without any fork. For this task, if we only assign one person for each stage, the overall success rate will be 75% * 50% = 37.5%, with time cost 3s and incentive cost $3. To satisfy the threshold, we must guarentee that the success rate of every stage must be higher than the threshold. The formula used to decided the number needed is N = ln(1 - T)/ln(1 - S), where T is the threshold and S is the success rate. Then pick the one stage with the lowest cost to increase. 
+Linear flow is simply consective tasks without any fork. 
 
-Note that the success rate of a single stage is decrease progresively. It cannot reach 100%. Therefore, I plan to use a list to compare the ratio of success rate and cost on every stage. Then iteratly add person util it reaches the threshold.
+#### Success rate
+Assume the theshold is 80%. For this task, if we only assign one person for each stage, the overall success rate will be only 75% * 50% = 37.5%, with time cost 3s and incentive cost $3. Therefore, we need to assign tasks to more people to increase the success rate. 
+
+To satisfy the threshold, we must guarentee that the success rate of every stage must be higher than the threshold. Think about the example. If the threshold is 80%, then the greatest difference between success rate of two stages are 80% and 100%. Otherwise one will exceed 100%. However, the success rate of a single stage is decrease progresively. It is impossible to reach 100%. 
+
+The formula used to decided the number needed is N = ceilling(ln(1 - T)/ln(1 - S)), where T is the threshold and S is the success rate. In this case, the stage 1 requries 3 people and stage 2 requires 2 people.
+
+#### Cost 
+If the overall success rate is still lower than the threshold after using the formula, then pick the one stage with the lowest cost to increase. I plan to use a list to compare the ratio of success rate and cost on every stage. Then iteratly add person util it reaches the threshold.
+
+#### Time
+In this scenario we don't need to consider time.
+
+### Scenario 2: Alternative Flow
+
+![Scenario 2](./scenario2.jpg)
+
+Alternative flow is a task that retrive data from multiply source. If one of these stages succeed, all other parallel tasks will stop. 
+
+#### Success rate
+For this task, if we only assign one person for each stage, the overall success rate will be 100 - (100 - 50) * (100 - 75)% = 87.5%.
