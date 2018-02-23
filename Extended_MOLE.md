@@ -1,5 +1,12 @@
 # A Plan for Extended MOLE
 
+The extended MOLE should perform following tasks:
+
+* Allow environment centric sensing, such as getting tempreture from sensors (original MOLE)
+* Allow human centric sensing, such as taking photo
+* Allow data evaluation on the edge
+* Provide possiblity and incentive cost optimization and estimation
+
 ## TODO
 
 * Need to specify unique participant, such that a data collector cannot evaluate his own data.
@@ -19,13 +26,13 @@
 
 Microservice API defines the functionality to perform, such as taking photo. It includes required and optional parameters for users to specify. Default parameter can be overrided.
 
-Each MS should specify exact thing to do. 
+Microservices are implemented on the gateway. They are components that provide to users. Each microservie perform a function and provide parameter for users to change.
 
-* Location: Location of devices
+* Location: Location of devices will be specified in this format: "US", "US.Virginia", "US.Virginia.Blacksburg", "US.Washington_DC"
 * Instruction: A instruction that shows to participants about what to do. It should be a format that can be displayed on Android System.
-* Title: A title that shows to participants
-* Return: Result of this microservice. Return type, number and quality should be specified in this field. Executor and client can be implemented to fit specific microservice.
-* Parameter passing: Parameters will be passed by directly call the next microserver. Missing parameter will be specify by underline.
+* Title: A title that shows to participants in the task list.
+* Return: It specify the result of this microservice. Result types are defined by the API, but users can specify one or more of return types, number and quality. Executor and client will be implemented to fit specific microservice and show informatioin on the client side.
+* Parameter passing: Parameters will be passed by directly call the next microserver. Missing parameter will be replace by underline. The compiler will figure out the control flow.
 
 ## Microservice API Example
 
