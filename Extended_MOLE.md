@@ -75,7 +75,7 @@ Service RecognizeVehicle {
 	
   MS TakePhoto {
     location=[“US.Virginia”, “US.Washington_DC”]
-    instruction=“./README.html” // A format that can be displayed on Android
+    instruction=“./README.xml” // A format that can be displayed on Android
     title: “Take photo of vehicles”
     return: {
       tag={
@@ -89,7 +89,7 @@ Service RecognizeVehicle {
   }
 
   MS EvaluatePhoto {
-    instruction: “./README.html”
+    instruction: “./README.xml”
     title: “Evaluate photo of vehicles”
     on.success: DeepLearningTraining(image, tag); exit
     on.fail: exit
