@@ -96,7 +96,8 @@ Service RecognizeVehicle {
   }
 
   MS DeepLearningTraining {
-    code=“./training.tar”
+    code: “./training.tar”
+    driver: "./run.sh"
     on.success: ret model; exit
     on.fail: exit
   }
