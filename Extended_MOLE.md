@@ -104,6 +104,16 @@ Service RecognizeVehicle {
   MS EvaluatePhoto {
     info.instruction: “./README.xml”
     info.title: “Evaluate photo of vehicles”
+    data.require: {
+      image: {
+        vehicle: jpeg
+      },
+      tag: {
+        Make: String
+        Model: String
+        Year: String
+      }
+    }
     data.return: {
       image: {
         vehicle: jpeg
