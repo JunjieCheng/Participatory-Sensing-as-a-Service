@@ -171,10 +171,10 @@ Service RecognizeVehicle {
 <Information_Params_Location> ::= "info.location: " (<Location>|("[" <Location>{", " <Location>} "]"))
 <Location> ::= <Country_Code> ["." <State_Name> ["." <City_Name>]]
 <Information_Params_Instruction> ::= "info.instruction: " <File_Path>
-<File_Path> ::= <String>
 <Information_Params_Title> ::= "info.title: " <String>
 
-<Data_Params> ::= 
+<Data_Params> ::= <Data_Params_Require>|<Data_Params_Return>
+<Data_Params_Require> ::= "data.require: {" <Data_Parameter>{"," <Data_Parameter>} "}"
 
 <After_Execution_Rules> ::= 
 ```
