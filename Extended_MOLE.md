@@ -174,7 +174,15 @@ Service RecognizeVehicle {
 <Information_Params_Title> ::= "info.title: " <String>
 
 <Data_Params> ::= <Data_Params_Require>|<Data_Params_Return>
-<Data_Params_Require> ::= "data.require: {" <Data_Parameter>{"," <Data_Parameter>} "}"
+<Data_Params_Require> ::= "data.require: {" <Data_Params_Category>{"," <Data_Params_Category>} "}"
+<Data_Params_Return> ::= "data.return: {" <Data_Params_Category>{"," <Data_Params_Category>} "}"
+<Data_Params_Category> ::= <Data_Params_Category_Name> ": {" <Data_Parameter>{<Data_Parameter>} "}"
+<Data_Parameter> ::= <Data_Parameter_Name> ": " <Data_Parameter_Type>
+<Data_Parameter_Name> ::= <String>
+<Data_Parameter_Type> ::= <Data_Type>|<File_Type>
 
-<After_Execution_Rules> ::= 
+<After_Execution_Rules> ::= "on." <Condition> ":" (<Redirection>|<Return>){"; " (<Redirection>|<Return>)}
+<Condition> ::= "success"|"fail"
+<Redirection> ::= (<MS_Identity> "(" (<Data_Parameter_Name>|"_"){", " (<Data_Parameter_Name>|"_")} ")")|"exit"
+<Return> ::= <Data_Parameter_Name>
 ```
