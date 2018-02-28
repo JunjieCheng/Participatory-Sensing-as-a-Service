@@ -36,7 +36,7 @@ Microservices are implemented on the gateway. They are components that provide t
 ```
 MS TakePhoto {
   select.device: "Mobile Phone"       # Should we specify system version and hardware parameters?
-  select.minimumSystem: "Android 4.0"
+  select.minimumVersion: "Android 4.0"
   select.minimumQuality: "1440*900"
   info.humanInvolved: True
   info.location: "US"
@@ -52,7 +52,7 @@ MS TakePhoto {
 ```
 MS EvaluatePhoto {
   select.device: "Mobile Phone" 
-  select.minimumSystem: "Android 4.0"
+  select.minimumVersion: "Android 4.0"
   select.minimumQuality: "1440*900"
   info.humanInvolved: True
   info.location: "US"
@@ -78,8 +78,8 @@ Service RecognizeVehicle {
   incentiveMechanism: FixedPrice
   duration: 30d  // What format of time?
 	
-  MS TakePhoto {
-    select.minimumSystem: "Android 4.4"
+  MS: TakePhoto {
+    select.minimumVersion: "Android 4.4"
     info.location: [“US.Virginia”, “US.Washington_DC”]
     info.instruction: “./README.xml” // A format that can be displayed on Android
     info.title: “Take photo of vehicles”
@@ -97,7 +97,7 @@ Service RecognizeVehicle {
     on.fail: exit
   }
 
-  MS EvaluatePhoto {
+  MS: EvaluatePhoto {
     info.instruction: “./README.xml”
     info.title: “Evaluate photo of vehicles”
     data.require: {
@@ -124,7 +124,7 @@ Service RecognizeVehicle {
     on.fail: exit
   }
 
-  MS DeepLearningTraining {
+  MS: DeepLearningTraining {
     info.code: “./training.tar”
     info.driver: "./train.py"
     data.size: 1000
@@ -147,4 +147,26 @@ Service RecognizeVehicle {
   
 }
 
+```
+
+## EBNF of Extended MOLE
+
+```
+<Service_Suite> ::= <Service_Identity> <Service_Description>
+<Service_Identity> ::= "Service " String
+<Service_Description> ::= "{" {<Service_Parameter>} <Microservice_Invocations> {<Microservice_Invocations> "}"
+<Service_Parameter> ::= <Parameter_Name> ": " <Parameter_Value>
+
+<Microservice_Invocations> ::= "MS: " <MS_Identity> "{" [<MS_Detail>]{<MS_Detail>} "}"
+<MS_Identity> ::= String
+<MS_Detail>::= <Device_Selection>|<Information_Params>|<Data_Params>|<After_Execution_Rules>
+
+<Device_Selection> ::= <Device_Selection_Device>|<Device_Selection_Version>|<Device_Selection_Quality>
+<Device_Selection_Device> ::= "select.device: " String
+<Device_Selection_Version> ::= "select.minimumVersion: " String
+<Device_Selection_Quality> ::= "select.minimumQuality: " String
+
+<Information_Params> ::= <Information_Params_Human>|<Information_Params_Location>|<Information_Params_Instruction>|<Information_Params_Title>
+<Information_Params_Human> ::= "info.humanInvolved: " Boolean
+<Information_Params_Location> ::= "info.location: " <L
 ```
