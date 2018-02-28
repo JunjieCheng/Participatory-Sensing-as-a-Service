@@ -55,7 +55,7 @@ MS TakePhoto {
 ```
 MS EvaluatePhoto {
   select.device: "Mobile Phone" 
-  select.minimum_system: "Android 4.0"
+  select.minimumSystem: "Android 4.0"
   select.minimumQuality: "1440*900"
   info.humanInvolved: True
   info.location: "US"
@@ -102,8 +102,8 @@ Service RecognizeVehicle {
   }
 
   MS EvaluatePhoto {
-    instruction: “./README.xml”
-    title: “Evaluate photo of vehicles”
+    info.instruction: “./README.xml”
+    info.title: “Evaluate photo of vehicles”
     data.return: {
       image: {
         vehicle: jpeg
@@ -119,8 +119,8 @@ Service RecognizeVehicle {
   }
 
   MS DeepLearningTraining {
-    code: “./training.tar”
-    driver: "./run.sh"
+    info.code: “./training.tar”
+    info.driver: "./train.py"
     data.return: {
       model: PyTorch
     }
