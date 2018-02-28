@@ -38,28 +38,37 @@ Microservices are implemented on the gateway. They are components that provide t
 
 ```
 MS TakePhoto {
-  device: "Mobile Phone"       # Should we specify system version and hardware parameters?
-  humanInvolved: True
-  location: "US"
-  instruction: None
-  return: {
-    image: [jpeg, jpg, png]
-    tag: String
-  }
+  select.device: "Mobile Phone"       # Should we specify system version and hardware parameters?
+  select.minimumSystem: "Android 4.0"
+  select.minimumQuality: "1440*900"
+  info.humanInvolved: True
+  info.location: "US"
+  info.instruction: None
+  info.title: "Take Photo"
+  data.return: {
+    image: [jpeg, png],
+    tag: [String, Integer]
+  }
 }
 ```
 
 ```
 MS EvaluatePhoto {
-  device: "Mobile Phone" 
-  require: [image, tag]
-  humanInvolved: True
-  location: "US"
-  instruction: None
-  return: {       # I want it returns evaluated data
-    image: [jpeg, jpg, png]
-    tag: String
+  select.device: "Mobile Phone" 
+  select.minimum_system: "Android 4.0"
+  select.minimumQuality: "1440*900"
+  info.humanInvolved: True
+  info.location: "US"
+  info.instruction: None
+  info.title: "Evaluate Photo"
+  data.require: {
+    image: [jpeg, png],
+    tag: [String, Integer]
   }
+  data.return: {       # I want it returns evaluated data
+    image: [jpeg, png],
+    tag: [String, Integer]
+  }
 }
 ```
 
@@ -71,14 +80,18 @@ Service RecognizeVehicle {
   incentiveCost: 1000
   incentiveMechanism: FixedPrice
   numberOfData: 100
-  Duration: 30d
+  duration: 30d
 	
   MS TakePhoto {
-    location=[“US.Virginia”, “US.Washington_DC”]
-    instruction=“./README.xml” // A format that can be displayed on Android
-    title: “Take photo of vehicles”
-    return: {
-      tag={
+    select.minimumSystem: "Android 4.4"
+    info.location: [“US.Virginia”, “US.Washington_DC”]
+    info.instruction: “./README.xml” // A format that can be displayed on Android
+    info.title: “Take photo of vehicles”
+    data.return: {
+      image: {
+        vehicle: jpeg
+      },
+      tag: {
         Make: String
         Model: String
         Year: String
@@ -91,6 +104,16 @@ Service RecognizeVehicle {
   MS EvaluatePhoto {
     instruction: “./README.xml”
     title: “Evaluate photo of vehicles”
+    data.return: {
+      image: {
+        vehicle: jpeg
+      },
+      tag: {
+        Make: String
+        Model: String
+        Year: String
+      }
+    }
     on.success: DeepLearningTraining(image, tag); exit
     on.fail: exit
   }
@@ -98,7 +121,10 @@ Service RecognizeVehicle {
   MS DeepLearningTraining {
     code: “./training.tar”
     driver: "./run.sh"
-    on.success: ret model; exit
+    data.return: {
+      model: PyTorch
+    }
+    on.success: ret model; exit
     on.fail: exit
   }
   
