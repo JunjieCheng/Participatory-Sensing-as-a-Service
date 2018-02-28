@@ -79,7 +79,6 @@ Service RecognizeVehicle {
 	
   incentiveCost: 1000
   incentiveMechanism: FixedPrice
-  numberOfData: 100
   duration: 30d
 	
   MS TakePhoto {
@@ -97,7 +96,7 @@ Service RecognizeVehicle {
         Year: String
       }
     }
-    on.success: evaluatePhoto(image, tag); exit
+    on.success: EvaluatePhoto(image, tag); exit
     on.fail: exit
   }
 
@@ -131,6 +130,17 @@ Service RecognizeVehicle {
   MS DeepLearningTraining {
     info.code: “./training.tar”
     info.driver: "./train.py"
+    data.size: 1000
+    data.require: {
+      image: {
+        vehicle: jpeg
+      },
+      tag: {
+        Make: String
+        Model: String
+        Year: String
+      }
+    }
     data.return: {
       model: PyTorch
     }
