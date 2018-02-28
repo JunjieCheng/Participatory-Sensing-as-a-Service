@@ -153,20 +153,26 @@ Service RecognizeVehicle {
 
 ```
 <Service_Suite> ::= <Service_Identity> <Service_Description>
-<Service_Identity> ::= "Service " String
+<Service_Identity> ::= "Service " <String>
 <Service_Description> ::= "{" {<Service_Parameter>} <Microservice_Invocations> {<Microservice_Invocations> "}"
 <Service_Parameter> ::= <Parameter_Name> ": " <Parameter_Value>
 
 <Microservice_Invocations> ::= "MS: " <MS_Identity> "{" [<MS_Detail>]{<MS_Detail>} "}"
-<MS_Identity> ::= String
+<MS_Identity> ::= <String>
 <MS_Detail>::= <Device_Selection>|<Information_Params>|<Data_Params>|<After_Execution_Rules>
 
 <Device_Selection> ::= <Device_Selection_Device>|<Device_Selection_Version>|<Device_Selection_Quality>
-<Device_Selection_Device> ::= "select.device: " String
-<Device_Selection_Version> ::= "select.minimumVersion: " String
-<Device_Selection_Quality> ::= "select.minimumQuality: " String
+<Device_Selection_Device> ::= "select.device: " <String>
+<Device_Selection_Version> ::= "select.minimumVersion: " <String>
+<Device_Selection_Quality> ::= "select.minimumQuality: " <String>
 
 <Information_Params> ::= <Information_Params_Human>|<Information_Params_Location>|<Information_Params_Instruction>|<Information_Params_Title>
-<Information_Params_Human> ::= "info.humanInvolved: " Boolean
-<Information_Params_Location> ::= "info.location: " <L
+<Information_Params_Human> ::= "info.humanInvolved: " <Boolean>
+<Information_Params_Location> ::= "info.location: " (<Location>|("[" <Location>{", " <Location>} "]"))
+<Location> ::= <Country_Code> ["." <State_Name> ["." <City_Name>]]
+
+<Information_Params_Instruction> ::= "info.instruction: " <File_Path>
+<File_Path> ::= <String>
+
+<Information_Params_Title> ::= "info.title: " <String>
 ```
