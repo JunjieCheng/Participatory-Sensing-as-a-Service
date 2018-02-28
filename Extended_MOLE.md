@@ -10,8 +10,6 @@ The extended MOLE should perform following tasks:
 ## TODO
 
 * Need to specify unique participant, such that a data collector cannot evaluate his own data.
-* How to specify quality of data?
-* Should we specify variable type?
 
 ## Definition
 
@@ -19,7 +17,6 @@ The extended MOLE should perform following tasks:
 
 * Incentive cost: In dollars
 * Incentive mechanism: Fixed price or reverse auction
-* Number of data to collect
 * Duration: How long does the service exist on edge devices.
 
 ### Microservice API
@@ -79,7 +76,7 @@ Service RecognizeVehicle {
 	
   incentiveCost: 1000
   incentiveMechanism: FixedPrice
-  duration: 30d
+  duration: 30d  // What format of time?
 	
   MS TakePhoto {
     select.minimumSystem: "Android 4.4"
