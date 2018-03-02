@@ -71,21 +71,19 @@ MS TakePhoto {
 
 ```
 MS EvaluatePhoto {
-  select.device: "Mobile Phone" 
-  select.minimumVersion: "Android 4.0"
-  select.minimumQuality: "1440*900"
-  info.humanInvolved: True
-  info.location: "US"
-  info.instruction: None
-  info.title: "Evaluate Photo"
-  data.require: {
-    image: [jpeg, png],
-    tag: [String, Integer]
-  }
-  data.return: {       # I want it returns evaluated data
-    image: [jpeg, png],
-    tag: [String, Integer]
-  }
+  // Data will be sent to two devices for evaluation. If the result of two devices are different, it will be sent to a device with high reputation.
+  // Default
+  select.device.is("Mobile_Phone")
+  select.system.is("Android")
+  select.verison.greaterThanOrEq("4.4")
+  select.location.is("US")
+  
+  // Required
+  info.instruction.from("FileName.xml")
+  info.title.is("Title")
+  
+  data.require(Image [, String])
+  data.return(Image [, String])
 }
 ```
 
@@ -105,34 +103,19 @@ Service RecognizeVehicle {
     info.instruction.from(“./README.xml”)
     info.title.is(“Take photo of vehicles”)
     
-    data.return(
-    on.success: EvaluatePhoto(image, tag); exit
+    data.return(Image.JPEG[3] vehicle, String make, String model, String year)
+    
+    on.success: EvaluatePhoto(vehicle, make, model, year); exit
     on.fail: exit
   }
   
-  MS: EvaluatePhoto {
-    info.instruction: “./README.xml”
-    info.title: “Evaluate photo of vehicles”
-    data.require: {
-      image: {
-        vehicle: jpeg
-      },
-      tag: {
-        Make: String
-        Model: String
-        Year: String
-      }
-    }
-    data.return: {
-      image: {
-        vehicle: jpeg
-      },
-      tag: {
-        Make: String
-        Model: String
-        Year: String
-      }
-    }
+  MS: EvaluateVehiclePhoto extends EvaluatePhoto {
+    info.instruction.from(“./README.xml”)
+    info.title.is(“Evaluate photo of vehicles”)
+    
+    data.require(Image.JPEG[3] vehicle, String make, String model, String year)
+    data.return(Image.JPEG[3] vehicle, String make, String model, String year)
+    
     on.success: DeepLearningTraining(image, tag); exit
     on.fail: exit
   }
