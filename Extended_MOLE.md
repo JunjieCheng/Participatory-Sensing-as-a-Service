@@ -51,7 +51,7 @@ Microservices are implemented on the gateway. They are components that provide t
 * Return: It specify the result of this microservice. Result types are defined by the API, but users can specify one or more of return types, number and quality. Executor and client will be implemented to fit specific microservice and show informatioin on the client side.
 * Parameter passing: Parameters will be passed by directly call the next microserver. Missing parameter will be replace by underline. The compiler will figure out the control flow.
 
-## Microservice API Example
+## Base Microservice Example
 
 ```
 MS TakePhoto {
