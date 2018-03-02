@@ -55,16 +55,17 @@ Microservices are implemented on the gateway. They are components that provide t
 
 ```
 MS TakePhoto {
-  select.device: "Mobile Phone"       # Should we specify system version and hardware parameters?
-  select.minimumVersion: "Android 4.0"
-  select.minimumQuality: "1440*900"
-  info.location: "US"
-  info.instruction: None
-  info.title: "Take Photo"
-  data.return: {
-    image: [jpeg, png],
-    tag: [String, Integer]
-  }
+  // Default
+  select.device.is("Mobile_Phone")
+  select.system.is("Android")
+  select.verison.greaterThanOrEq("4.4")
+  select.location.is("US")
+  
+  // Required
+  info.instruction.from("FilePath")
+  info.title.is("Title")
+  
+  data.return(Image [, String])
 }
 ```
 
@@ -97,7 +98,7 @@ Service RecognizeVehicle {
   incentiveMechanism: FixedPrice
   duration: 30d  // What format of time?
 	
-  MS: TakePhoto {
+  MS: CollectVehiclePhoto extends TakePhoto {
     select.minimumVersion: "Android 4.4"
     info.location: [“US.Virginia”, “US.Washington_DC”]
     info.instruction: “./README.xml” // A format that can be displayed on Android
@@ -116,8 +117,6 @@ Service RecognizeVehicle {
     on.fail: exit
   }
   
-  MS: TakePhoto {
-
   MS: EvaluatePhoto {
     info.instruction: “./README.xml”
     info.title: “Evaluate photo of vehicles”
