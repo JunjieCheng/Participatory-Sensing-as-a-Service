@@ -7,6 +7,26 @@ The extended MOLE should perform following tasks:
 * Allow data evaluation on the edge
 * Provide possiblity and incentive cost optimization and estimation
 
+## New Features
+
+### Data Type
+
+Data type indicates the type of data that the user want to collect from the microservice. It is necessary to type of data processing microservice, because the program runs on the specific devices require specific data type. 
+
+The data type that need to specify includs String, Integer, Float etc... and file type includs image, audio and video. 
+
+### Location
+
+Location indicates the location of the device. It is important when the user only wants to collect data from a specific area.
+
+### Number of Data
+
+The original MOLE doesn't indicate the number of data to collect. It assumes that only one data will be needed. However, when a MS requires 100 data from a MS that can only privide 1 data. The syntax becomes insufficient.
+
+### Additional Information
+
+The original MOLE assumes that the MS is not human involved. Therefore, no additional information will be needed for sensors except the commands from the executor. However, when the executor is human, the user must provide additional information to guide participants to collect correct type of data. The additional information can be examples of correct data and incorrect data.
+
 ## TODO
 
 * Need to specify unique participant, such that a data collector cannot evaluate his own data.
@@ -38,7 +58,6 @@ MS TakePhoto {
   select.device: "Mobile Phone"       # Should we specify system version and hardware parameters?
   select.minimumVersion: "Android 4.0"
   select.minimumQuality: "1440*900"
-  info.humanInvolved: True
   info.location: "US"
   info.instruction: None
   info.title: "Take Photo"
@@ -96,6 +115,8 @@ Service RecognizeVehicle {
     on.success: EvaluatePhoto(image, tag); exit
     on.fail: exit
   }
+  
+  MS: TakePhoto {
 
   MS: EvaluatePhoto {
     info.instruction: “./README.xml”
