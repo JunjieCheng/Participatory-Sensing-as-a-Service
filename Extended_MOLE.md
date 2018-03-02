@@ -62,7 +62,7 @@ MS TakePhoto {
   select.location.is("US")
   
   // Required
-  info.instruction.from("FilePath")
+  info.instruction.from("FileName.xml")
   info.title.is("Title")
   
   data.return(Image [, String])
@@ -99,20 +99,13 @@ Service RecognizeVehicle {
   duration: 30d  // What format of time?
 	
   MS: CollectVehiclePhoto extends TakePhoto {
-    select.minimumVersion: "Android 4.4"
-    info.location: [“US.Virginia”, “US.Washington_DC”]
-    info.instruction: “./README.xml” // A format that can be displayed on Android
-    info.title: “Take photo of vehicles”
-    data.return: {
-      image: {
-        vehicle: jpeg
-      },
-      tag: {
-        Make: String
-        Model: String
-        Year: String
-      }
-    }
+    select.location.is("US")
+    select.location.isNot("[US.Virginia, US.Washington_DC]")
+    
+    info.instruction.from(“./README.xml”)
+    info.title.is(“Take photo of vehicles”)
+    
+    data.return(
     on.success: EvaluatePhoto(image, tag); exit
     on.fail: exit
   }
