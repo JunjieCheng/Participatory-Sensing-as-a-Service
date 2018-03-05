@@ -64,8 +64,9 @@ Microservices are implemented on the gateway. They are components that provide t
 ```
 MS GetImage {
   // Required
+  select.device.is("Mobile_Phone")
   info.instruction.from("FileName.xml")
-  info.title.is("Title")
+  info.title.from("Title")
   
   data.return([JPEG, PNG] image)
 }
@@ -73,15 +74,11 @@ MS GetImage {
 
 ```
 MS GetText {
-  // Default
-  select.device.is("Mobile_Phone")
-  select.system.is("Android")
-  select.verison.greaterThanOrEq("4.4")
-  select.location.is("US")
-  
   // Required
+  select.device.is("Mobile_Phone")
+  
   info.instruction.from("FileName.xml")
-  info.title.is("Title")
+  info.title.from("Title")
   
   MS.return([String, Integer, Float] text)
 }
@@ -98,7 +95,7 @@ MS EvaluateImage {
   
   // Required
   info.instruction.from("FileName.xml")
-  info.title.is("Title")
+  info.title.from("Title")
   
   MS.require([JPEG, PNG] image)
   MS.return([JPEG, PNG] image)
@@ -122,7 +119,7 @@ Service RecognizeVehicle {
     select.location.isNot("[US.Virginia, US.Washington_DC]")
     
     info.instruction.from(“./README.xml”)
-    info.title.is(“Dataset of vehicles”)
+    info.title.from(“Dataset of vehicles”)
     
     GetImage.return(JPEG vehicle[3])
     GetText.return(String make, String model, String year)
@@ -138,7 +135,7 @@ Service RecognizeVehicle {
     select.location.is("US")
     
     info.instruction.from(“./README.xml”)
-    info.title.is(“Evaluate dataset of vehicles”)
+    info.title.from(“Evaluate dataset of vehicles”)
     
     EvaluateImage.require(JPEG vehicle[10][3])
     EvaluateImage.return(JPEG vehicle[10][3])
