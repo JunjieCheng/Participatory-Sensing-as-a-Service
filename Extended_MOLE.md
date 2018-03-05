@@ -63,7 +63,6 @@ Microservices are implemented on the gateway. They are components that provide t
 
 ```
 MS GetImage {
-  
   // Required
   info.instruction.from("FileName.xml")
   info.title.is("Title")
@@ -84,7 +83,7 @@ MS GetText {
   info.instruction.from("FileName.xml")
   info.title.is("Title")
   
-  data.return([String, Integer, Float] text)
+  MS.return([String, Integer, Float] text)
 }
 ```
 
@@ -101,8 +100,8 @@ MS EvaluateImage {
   info.instruction.from("FileName.xml")
   info.title.is("Title")
   
-  data.require([JPEG, PNG] image)
-  data.return([JPEG, PNG] image)
+  MS.require([JPEG, PNG] image)
+  MS.return([JPEG, PNG] image)
 }
 ```
 
@@ -115,27 +114,38 @@ Service RecognizeVehicle {
   incentiveMechanism: FixedPrice
   duration: 30d  // What format of time?
 	
-  MS: CollectVehiclePhoto extends GetImage, GetText {
+  MS: CollectVehiclePhoto {
+    select.device.is("Mobile_Phone")
+    select.system.is("Android")
+    select.verison.greaterThanOrEq("4.4")
     select.location.is("US")
     select.location.isNot("[US.Virginia, US.Washington_DC]")
     
     info.instruction.from(“./README.xml”)
-    info.title.is(“Take photo of vehicles”)
+    info.title.is(“Dataset of vehicles”)
     
-    data.return(JPEG[3] vehicle, String make, String model, String year)
+    GetImage.return(JPEG vehicle[3])
+    GetText.return(String make, String model, String year)
     
     on.success: EvaluatePhoto(vehicle, make, model, year); exit
     on.fail: exit
   }
   
-  MS: EvaluateVehiclePhoto extends EvaluateImage, EvaluateText {
+  MS: EvaluateVehiclePhoto {
+    select.device.is("Mobile_Phone")
+    select.system.is("Android")
+    select.verison.greaterThanOrEq("4.4")
+    select.location.is("US")
+    
     info.instruction.from(“./README.xml”)
-    info.title.is(“Evaluate photo of vehicles”)
+    info.title.is(“Evaluate dataset of vehicles”)
     
-    data.require(JPEG[3] vehicle, String make, String model, String year)
-    data.return(JPEG[3] vehicle, String make, String model, String year)
+    EvaluateImage.require(JPEG vehicle[10][3])
+    EvaluateImage.return(JPEG vehicle[10][3])
+    EvaluateText.require(String make[10], String model[10], String year[10])
+    EvaluateText.return(String make[10], String model[10], String year[10])
     
-    on.success: DeepLearningTraining(image, tag); exit
+    on.success: DeepLearningTraining(vehicle[3], make, model, year); exit
     on.fail: exit
   }
 
@@ -143,7 +153,7 @@ Service RecognizeVehicle {
     info.code.from(“./training.tar”)
     info.driver.from("./train.py")
     
-    data.require(JPEG[1000][3] vehicle, String[1000] make, String[1000] model, String[1000] year)
+    data.require(JPEG vehicle[1000][3], String make[1000], String model[1000], String year[1000])
     data.return(PyTorch model)
    
     on.success: ret model; exit
@@ -153,6 +163,8 @@ Service RecognizeVehicle {
 }
 
 ```
+
+## 
 
 ## EBNF of Extended MOLE
 
