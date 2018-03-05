@@ -9,6 +9,12 @@ The extended MOLE should perform following tasks:
 
 ## New Features
 
+### Base Microservice
+
+Base microservice performs a specific and basic functionality, such as getting image, getting text. Users are allowed to extend multiply basic microservice to customize their own microservices. 
+
+In multiple inheritance, same parameters in the basic microservices will be merged. 
+
 ### Data Type
 
 Data type indicates the type of data that the user want to collect from the microservice. It is necessary to type of data processing microservice, because the program runs on the specific devices require specific data type. 
@@ -22,6 +28,8 @@ Location indicates the location of the device. It is important when the user onl
 ### Number of Data
 
 The original MOLE doesn't indicate the number of data to collect. It assumes that only one data will be needed. However, when a MS requires 100 data from a MS that can only privide 1 data. The syntax becomes insufficient.
+
+The solution in this version is to indicate the number of data required in the return and require field. It looks like an array.
 
 ### Additional Information
 
@@ -54,7 +62,7 @@ Microservices are implemented on the gateway. They are components that provide t
 ## Base Microservice Example
 
 ```
-MS TakePhoto {
+MS GetImage {
   // Default
   select.device.is("Mobile_Phone")
   select.system.is("Android")
@@ -65,12 +73,28 @@ MS TakePhoto {
   info.instruction.from("FileName.xml")
   info.title.is("Title")
   
-  data.return(Image [, String])
+  data.return([JPEG, PNG] image)
 }
 ```
 
 ```
-MS EvaluatePhoto {
+MS GetText {
+  // Default
+  select.device.is("Mobile_Phone")
+  select.system.is("Android")
+  select.verison.greaterThanOrEq("4.4")
+  select.location.is("US")
+  
+  // Required
+  info.instruction.from("FileName.xml")
+  info.title.is("Title")
+  
+  data.return([String, Integer, Float] text)
+}
+```
+
+```
+MS EvaluateImage {
   // Data will be sent to two devices for evaluation. If the result of two devices are different, it will be sent to a device with high reputation.
   // Default
   select.device.is("Mobile_Phone")
@@ -82,8 +106,8 @@ MS EvaluatePhoto {
   info.instruction.from("FileName.xml")
   info.title.is("Title")
   
-  data.require(Image [, String])
-  data.return(Image [, String])
+  data.require([JPEG, PNG] image)
+  data.return([JPEG, PNG] image)
 }
 ```
 
@@ -96,47 +120,37 @@ Service RecognizeVehicle {
   incentiveMechanism: FixedPrice
   duration: 30d  // What format of time?
 	
-  MS: CollectVehiclePhoto extends TakePhoto {
+  MS: CollectVehiclePhoto extends GetImage, GetText {
     select.location.is("US")
     select.location.isNot("[US.Virginia, US.Washington_DC]")
     
     info.instruction.from(“./README.xml”)
     info.title.is(“Take photo of vehicles”)
     
-    data.return(Image.JPEG[3] vehicle, String make, String model, String year)
+    data.return(JPEG[3] vehicle, String make, String model, String year)
     
     on.success: EvaluatePhoto(vehicle, make, model, year); exit
     on.fail: exit
   }
   
-  MS: EvaluateVehiclePhoto extends EvaluatePhoto {
+  MS: EvaluateVehiclePhoto extends EvaluateImage, EvaluateText {
     info.instruction.from(“./README.xml”)
     info.title.is(“Evaluate photo of vehicles”)
     
-    data.require(Image.JPEG[3] vehicle, String make, String model, String year)
-    data.return(Image.JPEG[3] vehicle, String make, String model, String year)
+    data.require(JPEG[3] vehicle, String make, String model, String year)
+    data.return(JPEG[3] vehicle, String make, String model, String year)
     
     on.success: DeepLearningTraining(image, tag); exit
     on.fail: exit
   }
 
-  MS: DeepLearningTraining {
-    info.code: “./training.tar”
-    info.driver: "./train.py"
-    data.size: 1000
-    data.require: {
-      image: {
-        vehicle: jpeg
-      },
-      tag: {
-        Make: String
-        Model: String
-        Year: String
-      }
-    }
-    data.return: {
-      model: PyTorch
-    }
+  MS: DeepLearningTraining extends MachineLearning {
+    info.code.from(“./training.tar”)
+    info.driver.from("./train.py")
+    
+    data.require(JPEG[1000][3] vehicle, String[1000] make, String[1000] model, String[1000] year)
+    data.return(PyTorch model)
+   
     on.success: ret model; exit
     on.fail: exit
   }
