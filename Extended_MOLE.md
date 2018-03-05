@@ -63,12 +63,7 @@ Microservices are implemented on the gateway. They are components that provide t
 
 ```
 MS GetImage {
-  // Default
-  select.device.is("Mobile_Phone")
-  select.system.is("Android")
-  select.verison.greaterThanOrEq("4.4")
-  select.location.is("US")
-  
+  
   // Required
   info.instruction.from("FileName.xml")
   info.title.is("Title")
