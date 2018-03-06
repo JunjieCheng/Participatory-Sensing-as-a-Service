@@ -85,13 +85,15 @@ MS GetText {
 ```
 
 ```
-MS EvaluateImage {
+MS base TakePhoto{
+	device.select.has("camera");
+	return.type = "JPEG, PNG";
+	return.tag
+}
+
+MS EvaluateImage extends TakePhoto {
   // Data will be sent to two devices for evaluation. If the result of two devices are different, it will be sent to a device with high reputation.
-  // Default
-  select.device.is("Mobile_Phone")
-  select.system.is("Android")
-  select.verison.greaterThanOrEq("4.4")
-  select.location.is("US")
+  select.location.is("xxx")
   
   // Required
   info.instruction.from("FileName.xml")
@@ -168,14 +170,36 @@ Service RecognizeVehicle {
 ```
 Service GetTemp {
 
-  MS: getTempSensorReading {
-    select.device.is("Sensor")
-    select.device.has("Tempreture")
-    select.location.is("Current")
+  MS: getTempSensorReading extends Device.ReadTempreture {
+    select.location.is("Nearby")
     
-    String temp = ReadSensor("Tempreture")
+    on.success: ret String temp; exit
+    on.fail: getTempByLocation
+  }
+  
+  MS: getTempByLocation extends Internet.ReadTempreture {
+    select.location.is(location)
+    select.try.lessThanOrEq("3")
+    
+    on.success: ret String temp; exit
+    on.fail: exit
+  }
+  
+  MS: getLocationByGPS extends Device.ReadGPSLocation {
+    select.location.is("Nearby")
+    
+    on.success: ret String location; exit
+    on.fail: exit
+  }
     
+  MS: getLocationByCellID extends Device.ReadCellTowerLocation { 
+    select.location.is("Nearby")
     
+    on.success: ret String location; exit
+    on.fail: exit
+  }
+  
+}
   
 ```
 
@@ -184,11 +208,28 @@ Service GetTemp {
 ```
 Service AirQualityMonitering {
 
-  MS: GetCurrentLocation {
-    select.device("
-
-  MS: GetAirQualityFromSensor {
-    select.device("Sensor")
+  MS: GetAirQualityFromSensor extends Device.ReadPM2.5 {
+    select.location.is("Nearby")
+    
+    on.success: ret String airQuality; exit
+    on.fail: GetAirQualityFromPhoto
+  } 
+  
+  MS: GetAirQualityFromPhoto extends Device.AnalyzePM2.5FromPhoto {
+    select.input.from(image)
+    
+    on.success: ret String airQuality; exit
+    on.fail: exit
+  }
+  
+  MS: TakePhoto extends MobilePhone.TakePhoto {
+    select.location.is("Nearby")
+    
+    on.success: ret JPEG image; exit
+    on.fail: exit
+  }
+ 
+}
 ```
 
 ## EBNF of Extended MOLE
