@@ -169,14 +169,14 @@ Service GetTemp {
   Expiration: 21:00:00 03/06/2018
   NumberOfData: 1
 
-  MS: getTempSensorReading extends Device.ReadTempreture {
+  MS: ReadTempFromSensor extends Device.ReadTempreture {
     select.location.is("Nearby")
     
     on.success: ret String temp; exit
     on.fail: getTempByLocation
   }
   
-  MS: getTempByLocation extends Internet.ReadTempreture {
+  MS: GetTempByLocation extends Internet.ReadTempreture {
     select.location.is(location)
     select.try.lessThanOrEq("3")
     
@@ -184,14 +184,14 @@ Service GetTemp {
     on.fail: exit
   }
   
-  MS: getLocationByGPS extends MobilePhone.ReadGPSLocation {
+  MS: GetLocationByGPS extends MobilePhone.ReadGPSLocation {
     select.location.is("Nearby")
     
     on.success: ret String location; exit
     on.fail: exit
   }
     
-  MS: getLocationByCellID extends Device.ReadCellTowerLocation { 
+  MS: GetLocationByCellID extends Device.ReadCellTowerLocation { 
     select.location.is("Nearby")
     
     on.success: ret String location; exit
