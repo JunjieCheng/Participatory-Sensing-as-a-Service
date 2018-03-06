@@ -62,8 +62,7 @@ Microservices are implemented on the gateway. They are components that provide t
 ## Base Microservice Example
 
 ```
-MS GetImage {
-  // Required
+basic MS TakePhoto {
   select.device.is("Mobile_Phone")
   info.instruction.from("FileName.xml")
   info.title.from("Title")
@@ -207,6 +206,8 @@ Service GetTemp {
 
 ```
 Service AirQualityMonitering {
+
+  expiration: 21:00:00 03/06/2018
 
   MS: GetAirQualityFromSensor extends Device.ReadPM2.5 {
     select.location.is("Nearby")
