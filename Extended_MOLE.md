@@ -161,7 +161,30 @@ Service RecognizeVehicle {
 
 ```
 
-## 
+## Example: Rewrite getTemp
+
+```
+Service GetTemp {
+
+  MS: getTempSensorReading {
+    select.device.is("Sensor")
+    select.device.has("Tempreture")
+    
+    
+  
+```
+
+## Example: Air Quality Monitering
+
+```
+Service AirQualityMonitering {
+
+  MS: GetCurrentLocation {
+    select.device("
+
+  MS: GetAirQualityFromSensor {
+    select.device("Sensor")
+```
 
 ## EBNF of Extended MOLE
 
