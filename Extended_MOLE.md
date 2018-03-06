@@ -224,6 +224,8 @@ Service AirQualityMonitering {
   
   MS: TakePhoto extends MobilePhone.TakePhoto {
     select.location.is("Nearby")
+    info.instruction.from(“./README.xml”)
+    info.title.from(“Take Photo for Analyzing PM2.5”)
     
     on.success: ret JPEG image; exit
     on.fail: exit
