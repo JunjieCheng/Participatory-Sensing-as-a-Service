@@ -109,7 +109,7 @@ Service RecognizeVehicle {
 	
   incentiveCost: 1000
   incentiveMechanism: FixedPrice
-  duration: 30d  // What format of time?
+  expiration: 23:00:00 04/05/2018
 	
   MS: CollectVehiclePhoto {
     select.device.is("Mobile_Phone")
@@ -121,9 +121,9 @@ Service RecognizeVehicle {
     info.instruction.from(“./README.xml”)
     info.title.from(“Dataset of vehicles”)
     
-    GetImage.return(JPEG vehicle[3])
-    GetText.return(String make, String model, String year)
-    
+    JPEG vehicle[3] = GetImage()
+    String make, String model, String year = GetText()
+   
     on.success: EvaluatePhoto(vehicle, make, model, year); exit
     on.fail: exit
   }
@@ -137,9 +137,11 @@ Service RecognizeVehicle {
     info.instruction.from(“./README.xml”)
     info.title.from(“Evaluate dataset of vehicles”)
     
-    EvaluateImage.require(JPEG vehicle[10][3])
+    JPEG vehicle
+    
+    EvaluateImage.take(JPEG vehicle[10][3])
     EvaluateImage.return(JPEG vehicle[10][3])
-    EvaluateText.require(String make[10], String model[10], String year[10])
+    EvaluateText.take(String make[10], String model[10], String year[10])
     EvaluateText.return(String make[10], String model[10], String year[10])
     
     on.success: DeepLearningTraining(vehicle[3], make, model, year); exit
@@ -150,7 +152,7 @@ Service RecognizeVehicle {
     info.code.from(“./training.tar”)
     info.driver.from("./train.py")
     
-    data.require(JPEG vehicle[1000][3], String make[1000], String model[1000], String year[1000])
+    data.take(JPEG vehicle[1000][3], String make[1000], String model[1000], String year[1000])
     data.return(PyTorch model)
    
     on.success: ret model; exit
@@ -169,7 +171,10 @@ Service GetTemp {
   MS: getTempSensorReading {
     select.device.is("Sensor")
     select.device.has("Tempreture")
+    select.location.is("Current")
     
+    String temp = ReadSensor("Tempreture")
+    
     
   
 ```
