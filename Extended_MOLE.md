@@ -108,12 +108,12 @@ MS EvaluateImage extends TakePhoto {
 ```
 Service RecognizeVehicle {
 	
-  incentiveCost: 1000
-  incentiveMechanism: FixedPrice
-  expiration: 23:00:00 04/05/2018
+  IncentiveCost: 1000
+  IncentiveMechanism: FixedPrice
+  Expiration: 23:00:00 04/05/2018
+  NumberOfData: 1000
 	
-  MS: CollectVehiclePhoto {
-    select.device.is("Mobile_Phone")
+  MS: CollectVehiclePhoto extends MobilePhone.TakePhotoWithTag {
     select.system.is("Android")
     select.verison.greaterThanOrEq("4.4")
     select.location.is("US")
@@ -121,11 +121,8 @@ Service RecognizeVehicle {
     
     info.instruction.from(“./README.xml”)
     info.title.from(“Dataset of vehicles”)
-    
-    JPEG vehicle[3] = GetImage()
-    String make, String model, String year = GetText()
-   
-    on.success: EvaluatePhoto(vehicle, make, model, year); exit
+        
+    on.success: ret JPEG image, String tag; EvaluatePhoto
     on.fail: exit
   }
   
@@ -169,6 +166,9 @@ Service RecognizeVehicle {
 ```
 Service GetTemp {
 
+  Expiration: 21:00:00 03/06/2018
+  NumberOfData: 1
+
   MS: getTempSensorReading extends Device.ReadTempreture {
     select.location.is("Nearby")
     
@@ -207,7 +207,8 @@ Service GetTemp {
 ```
 Service AirQualityMonitering {
 
-  expiration: 21:00:00 03/06/2018
+  Expiration: 21:00:00 03/06/2018
+  NumberOfData: 1
 
   MS: GetAirQualityFromSensor extends Device.ReadPM2.5 {
     select.location.is("Nearby")
