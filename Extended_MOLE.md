@@ -185,7 +185,7 @@ Service GetTemp {
     on.fail: exit
   }
   
-  MS: getLocationByGPS extends Device.ReadGPSLocation {
+  MS: getLocationByGPS extends MobilePhone.ReadGPSLocation {
     select.location.is("Nearby")
     
     on.success: ret String location; exit
