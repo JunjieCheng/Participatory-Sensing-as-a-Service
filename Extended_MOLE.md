@@ -122,7 +122,7 @@ Service RecognizeVehicle {
     info.instruction.from(“./README.xml”)
     info.title.from(“Dataset of vehicles”)
         
-    on.success: ret JPEG image, String tag; EvaluateVehiclePhoto
+    on.success: ret JPEG image, String tag
     on.fail: exit
   }
   
