@@ -108,10 +108,10 @@ MS EvaluateImage extends TakePhoto {
 ```
 Service RecognizeVehicle {
 	
-  IncentiveCost: 1000
-  IncentiveMechanism: FixedPrice
-  Expiration: 23:00:00 04/05/2018
-  NumberOfData: 1000
+  global.incentiveCost.is("1000")
+  global.incentiveMechanism.is("FixedPrice")
+  global.expiration.is("23:00:00 04/05/2018")
+  global.numberOfDate.is("1000")
 	
   MS: CollectVehiclePhoto extends MobilePhone.TakePhotoWithTag {
     select.system.is("Android")
