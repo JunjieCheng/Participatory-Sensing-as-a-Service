@@ -129,7 +129,7 @@ Service RecognizeVehicle {
   MS: EvaluateVehiclePhoto extends MobilePhone.EvaluatePhotoWithTag {
     select.system.is("Android")
     select.verison.greaterThanOrEq("4.4")
-    select.device.uniqueFrom("CollectVehiclePhoto")
+    select.device.differentAs("CollectVehiclePhoto")
     
     info.instruction.from(“./README.xml”)
     info.title.from(“Evaluate dataset of vehicles”)
