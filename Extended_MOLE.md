@@ -119,10 +119,10 @@ Service CityHealth {
   MS: TakePhoto extends MobilePhone.TakePhotoWithTag {
     select.system.is("Android")
     select.version.greaterThanOrEq("4.4")
-    select.location.is("US.Virginia", "US.Washington_DC")
+    select.location.is("US", exclude="US.Virginia, US.Washington_DC")
     
-    info.instruction.from(“./README.xml”)
-    info.title.from(“City Health”)
+    info.instructionFrom(“./README.xml”)
+    info.titleFrom(“City Health”)
     
     on.success: ret JPEG image, String tag
     on.fail: exit
