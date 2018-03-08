@@ -22,6 +22,10 @@ The data type needs to be specified when return the result in the format "<DataT
 
 Location indicates the location of the device. It is important when the user only wants to collect data from a specific area. The location will be specified in the format "select.location.[is|isNot]("US.[State|City].[City]")". The default location is US. Is and isNot can overlap to exclude some place, but each of they can only appear at most once.
 
+There are three kinds of location now: city name, latitude and longitude, and access point id.
+
+When selecting city name, it includes all access point in this city. When selecting latitude and longitude, user must indicate the range around this point. When selecting access point id, the default range is the covering range of the access point.
+
 ### Number of Data
 
 This indicates the number of data that user wants to collect. The current solution of global input looks insufficient because it becomes confused when the data is merged in the control flow. 
@@ -36,7 +40,9 @@ The original MOLE assumes that the MS is not human involved. Therefore, no addit
 * Multiple data type return
 * Multiple data return
 * Location expression
-* Location, name or coordination
+* Location type: city name, latitude and longitude, and access point id.
+* Format of global input
+* Is the syntax consistant? How to differentiate is, isNot, eq, greaterThan etc.?
 
 ## Definition
 
@@ -109,7 +115,6 @@ Service CityHealth {
   global.incentiveCost = 1000
   global.incentiveMechanism = "FixedPrice"
   global.expiration = "23:00:00 04/05/2018"
-  global.numberOfData = 1000
   
   MS: TakePhoto extends MobilePhone.TakePhotoWithTag {
     select.system.is("Android")
@@ -132,6 +137,7 @@ Service CityHealth {
     info.title.from(“Evaluate City Health”)
     
     data.require(image, tag)
+    data.number.eq("1000")
     
     on.success: ret JPEG image, String tag
     on.fail: exit
