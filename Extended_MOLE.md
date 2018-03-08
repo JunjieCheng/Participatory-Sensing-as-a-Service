@@ -3,33 +3,28 @@
 The extended MOLE should perform following tasks:
 
 * Allow environment centric sensing, such as getting tempreture from sensors (original MOLE)
-* Allow human centric sensing, such as taking photo
-* Allow data evaluation on the edge
-* Provide possiblity and incentive cost optimization and estimation
+* Allow human centric sensing, such as taking photo and evaluating photo
+* Provide possiblity and incentive cost optimization and estimation (SLA)
 
 ## New Features
 
-### Base Microservice
+### Basic Microservice
 
-Base microservice performs a specific and basic functionality, such as getting image, getting text. Users are allowed to extend multiply basic microservice to customize their own microservices. 
-
-In multiple inheritance, same parameters in the basic microservices will be merged. 
+Basic microservice performs a specific and basic functionality, such as taking photo, getting text. Each customized microservice must extend one basic microservice.
 
 ### Data Type
 
-Data type indicates the type of data that the user want to collect from the microservice. It is necessary to type of data processing microservice, because the program runs on the specific devices require specific data type. 
+Data type indicates the type of data that the user want to collect from the microservice. It is necessary to type of data processing microservice, because the program runs on the specific devices require specific data type. The data type that need to specify includs String, Integer, Float etc... and file type of image, audio and video. 
 
-The data type that need to specify includs String, Integer, Float etc... and file type includs image, audio and video. 
+The data type needs to be specified when return the result in the format "<DataType> <VariableName>".
 
 ### Location
 
-Location indicates the location of the device. It is important when the user only wants to collect data from a specific area.
+Location indicates the location of the device. It is important when the user only wants to collect data from a specific area. The location will be specified in the format "select.location.[is|isNot]("US.[State|City].[City]")". The default location is US. Is and isNot can overlap to exclude some place, but each of they can only appear at most once.
 
 ### Number of Data
 
-The original MOLE doesn't indicate the number of data to collect. It assumes that only one data will be needed. However, when a MS requires 100 data from a MS that can only privide 1 data. The syntax becomes insufficient.
-
-The solution in this version is to indicate the number of data required in the return and require field. It looks like an array.
+This indicates the number of data that user wants to collect. The current solution of global input looks insufficient because it becomes confused when the data is merged in the control flow. 
 
 ### Additional Information
 
@@ -37,7 +32,11 @@ The original MOLE assumes that the MS is not human involved. Therefore, no addit
 
 ## TODO
 
-* Need to specify unique participant, such that a data collector cannot evaluate his own data.
+* Server and access point
+* Multiple data type return
+* Multiple data return
+* Location expression
+* Location, name or coordination
 
 ## Definition
 
@@ -103,7 +102,45 @@ MS EvaluateImage extends TakePhoto {
 }
 ```
 
-## Taking Photo for Vehicle Recognition Example
+## Example: City Health
+```
+Service CityHealth {
+  
+  global.incentiveCost = 1000
+  global.incentiveMechanism = "FixedPrice"
+  global.expiration = "23:00:00 04/05/2018"
+  global.numberOfData = 1000
+  
+  MS: TakePhoto extends MobilePhone.TakePhotoWithTag {
+    select.system.is("Android")
+    select.version.greaterThanOrEq("4.4")
+    select.location.is("US.Virginia", "US.Washington_DC")
+    
+    info.instruction.from(“./README.xml”)
+    info.title.from(“City Health”)
+    
+    on.success: ret JPEG image, String tag
+    on.fail: exit
+  }
+  
+  MS: EvaluatePhoto extends MobilePhone.EvaluatePhotoWithTag {
+    select.system.is("Android")
+    select.verison.greaterThanOrEq("4.4")
+    select.device.differentAs("TakePhoto")
+    
+    info.instruction.from(“./README.xml”)
+    info.title.from(“Evaluate City Health”)
+    
+    data.require(image, tag)
+    
+    on.success: ret JPEG image, String tag
+    on.fail: exit
+  }
+
+}
+```
+
+## Example: Taking Photo for Vehicle Recognition
 
 ```
 Service RecognizeVehicle {
