@@ -113,33 +113,35 @@ MS EvaluateImage extends TakePhoto {
 Service CityHealth {
   
   global.incentiveCost = 1000
-  global.incentiveMechanism = "FixedPrice"
   global.expiration = "23:00:00 04/05/2018"
-  
-  MS: TakePhoto extends MobilePhone.TakePhotoWithTag {
-    select.system.is("Android")
-    select.version.greaterThanOrEq("4.4")
-    select.location.is("US", exclude="US.Virginia, US.Washington_DC")
+  global.numberOfData = 1000
+  global.location(["US.Virginia", "US.Washinton.DC"])
+  
+  MS: TakePhoto() extends MobilePhone.TakePhotoWithTag {
+    select.system = "Android"
+    select.version = "4.4+"
     
-    info.instructionFrom(“./README.xml”)
-    info.titleFrom(“City Health”)
+    info.instruction = “./README.xml”
+    info.title = “City Health”
+    info.reward = "0.5"
     
-    on.success: ret JPEG image, String tag
+    on.success: {
+      case user.reputation >= 70: EvaluatePhoto(JPEG image, String tag)
+      case default: return JPEG image, String tag
+    }
     on.fail: exit
   }
   
-  MS: EvaluatePhoto extends MobilePhone.EvaluatePhotoWithTag {
-    select.system.is("Android")
-    select.verison.greaterThanOrEq("4.4")
+  MS: EvaluatePhoto(JPEG image, String tag) extends MobilePhone.EvaluatePhotoWithTag {
+    select.system = "Android"
+    select.verison = "4.4+"
     select.device.differentAs("TakePhoto")
     
-    info.instruction.from(“./README.xml”)
-    info.title.from(“Evaluate City Health”)
-    
-    data.require(image, tag)
-    data.number.eq("1000")
-    
-    on.success: ret JPEG image, String tag
+    info.instruction = “./README.xml”
+    info.title = “Evaluate City Health”
+    info.reward = "0.2"
+        
+    on.success: return JPEG image, String tag
     on.fail: exit
   }
 
