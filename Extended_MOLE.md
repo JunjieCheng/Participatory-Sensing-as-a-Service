@@ -115,7 +115,7 @@ Service CityHealth {
   global.incentiveCost = 1000
   global.expiration = "23:00:00 04/05/2018"
   global.numberOfData = 1000
-  global.location(["US.Virginia", "US.Washinton.DC"])
+  global.location = ["US.Virginia", "US.Washinton.DC"]
   
   MS: TakePhoto() extends MobilePhone.TakePhotoWithTag {
     select.system = "Android"
@@ -125,10 +125,20 @@ Service CityHealth {
     info.title = “City Health”
     info.reward = "0.5"
     
-    on.success: {
-      case user.reputation >= 70: EvaluatePhoto(JPEG image, String tag)
-      case default: return JPEG image, String tag
-    }
+    on.success: EvaluatePhoto(JPEG image, String tag)
+    on.fail: exit
+  }
+  
+  MS: TakePhoto2() extends MobilePhone.TakePhotoWithTag {
+    select.system = "Android"
+    select.version = "4.4+"
+    select.user.reputation = "70+"
+    
+    info.instruction = “./README.xml”
+    info.title = “City Health”
+    info.reward = "0.5"
+    
+    on.success: return JPEG image, String tag
     on.fail: exit
   }
   
@@ -148,81 +158,34 @@ Service CityHealth {
 }
 ```
 
-## Example: Taking Photo for Vehicle Recognition
-
-```
-Service RecognizeVehicle {
-	
-  global.incentiveCost.is("1000")
-  global.incentiveMechanism.is("FixedPrice")
-  global.expiration.is("23:00:00 04/05/2018")
-  global.numberOfDate.is("1000")
-	
-  MS: CollectVehiclePhoto extends MobilePhone.TakePhotoWithTag {
-    select.system.is("Android")
-    select.verison.greaterThanOrEq("4.4")
-    select.location.is("US")
-    select.location.isNot("[US.Virginia, US.Washington_DC]")
-    
-    info.instruction.from(“./README.xml”)
-    info.title.from(“Dataset of vehicles”)
-        
-    on.success: ret JPEG image, String tag
-    on.fail: exit
-  }
-  
-  MS: EvaluateVehiclePhoto extends MobilePhone.EvaluatePhotoWithTag {
-    select.system.is("Android")
-    select.verison.greaterThanOrEq("4.4")
-    select.device.differentAs("CollectVehiclePhoto")
-    
-    info.instruction.from(“./README.xml”)
-    info.title.from(“Evaluate dataset of vehicles”)
-    
-    data.require(image, tag)
-    
-    on.success: ret JPEG image, String tag
-    on.fail: exit
-  }
- 
-}
-
-```
-
 ## Example: Rewrite getTemp
 
 ```
 Service GetTemp {
 
-  Expiration: 21:00:00 03/06/2018
-  NumberOfData: 1
+  global.expiration = "21:00:00 03/06/2018"
+  global.numberOfData = 1
+  global.location = ["US.Virginia.Blacksburg"]
 
-  MS: ReadTempFromSensor extends Device.ReadTempreture {
-    select.location.is("Nearby")
-    
-    on.success: ret String temp
-    on.fail: getTempByLocation
+  MS: ReadTempFromSensor() extends Device.ReadTempreture {    
+    on.success: return String temp
+    on.fail: GetTempByLocation(_)
   }
   
-  MS: GetTempByLocation extends Internet.ReadTempreture {
-    select.location.is(location)
+  MS: GetTempByLocation(String location) extends Internet.ReadTempreture {
     select.try.lessThanOrEq("3")
     
-    on.success: ret String temp
+    on.success: return String temp
     on.fail: exit
   }
   
-  MS: GetLocationByGPS extends MobilePhone.ReadGPSLocation {
-    select.location.is("Nearby")
-    
-    on.success: ret String location
+  MS: GetLocationByGPS() extends MobilePhone.ReadGPSLocation {    
+    on.success: GetTempByLocation(String location)
     on.fail: exit
   }
     
-  MS: GetLocationByCellID extends Device.ReadCellTowerLocation { 
-    select.location.is("Nearby")
-    
-    on.success: ret String location
+  MS: GetLocationByCellID() extends Device.ReadCellTowerLocation {     
+    on.success: GetTempByLocation(String location)
     on.fail: exit
   }
   
@@ -235,29 +198,25 @@ Service GetTemp {
 ```
 Service AirQualityMonitering {
 
-  Expiration: 21:00:00 03/06/2018
-  NumberOfData: 1
-
-  MS: GetAirQualityFromSensor extends Device.ReadPM2.5 {
-    select.location.is("Nearby")
-    
-    on.success: ret String airQuality
-    on.fail: GetAirQualityFromPhoto
+  global.expiration = "21:00:00 03/06/2018"
+  global.numberOfData = 1
+  global.location = ["US.Virginia.Blacksburg"]
+  
+  MS: GetAirQualityFromSensor() extends Device.ReadPM2.5 {    
+    on.success: return String airQuality
+    on.fail: GetAirQualityFromPhoto(_)
   } 
   
-  MS: GetAirQualityFromPhoto extends Device.AnalyzePM2.5FromPhoto {
-    select.input.from(image)
-    
-    on.success: ret String airQuality
+  MS: GetAirQualityFromPhoto(JPEG image) extends Device.AnalyzePM2.5FromPhoto {    
+    on.success: return String airQuality
     on.fail: exit
   }
   
-  MS: TakePhoto extends MobilePhone.TakePhoto {
-    select.location.is("Nearby")
+  MS: TakePhoto() extends MobilePhone.TakePhoto {
     info.instruction.from(“./README.xml”)
     info.title.from(“Take Photo for Analyzing PM2.5”)
     
-    on.success: ret JPEG image
+    on.success: GetAirQualityFromPhoto(JPEG image)
     on.fail: exit
   }
  
