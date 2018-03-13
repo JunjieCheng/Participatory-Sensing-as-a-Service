@@ -84,8 +84,9 @@ basic MS: TakePhoto {
   select.version = "4.0+"
   select.user.reputation = "30+"
   
-  info.instruction.from("FileName.xml")
-  info.title.from("Title")
+  info.instruction = "FileName.xml"
+  info.title = "Title"
+  info.reward = "1"
   
   return [JPEG, PNG] image
 }
