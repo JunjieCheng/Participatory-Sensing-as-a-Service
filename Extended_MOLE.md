@@ -64,47 +64,30 @@ Microservices are implemented on the gateway. They are components that provide t
 * Return: It specify the result of this microservice. Result types are defined by the API, but users can specify one or more of return types, number and quality. Executor and client will be implemented to fit specific microservice and show informatioin on the client side.
 * Parameter passing: Parameters will be passed by directly call the next microserver. Missing parameter will be replace by underline. The compiler will figure out the control flow.
 
+## Global Input
+
+```
+global.incentiveCost = "1000"
+global.expiration = "23:00:00 04/05/2018"
+global.numberOfData = "1000"
+global.location = ["US.Virginia", "US.Washinton.DC"]
+global.reward = "FixedPrice"/"ReverseAuction"
+```
+
 ## Base Microservice Example
 
 ```
-basic MS TakePhoto {
-  select.device.is("Mobile_Phone")
-  info.instruction.from("FileName.xml")
-  info.title.from("Title")
-  
-  data.return([JPEG, PNG] image)
-}
-```
-
-```
-MS GetText {
-  // Required
-  select.device.is("Mobile_Phone")
+basic MS: TakePhoto {
+  select.device = "Mobile_Phone"
+  select.device.differentAs()
+  select.device.sameAs()
+  select.version = "4.0+"
+  select.user.reputation = "30+"
   
   info.instruction.from("FileName.xml")
   info.title.from("Title")
   
-  MS.return([String, Integer, Float] text)
-}
-```
-
-```
-MS base TakePhoto{
-	device.select.has("camera");
-	return.type = "JPEG, PNG";
-	return.tag
-}
-
-MS EvaluateImage extends TakePhoto {
-  // Data will be sent to two devices for evaluation. If the result of two devices are different, it will be sent to a device with high reputation.
-  select.location.is("xxx")
-  
-  // Required
-  info.instruction.from("FileName.xml")
-  info.title.from("Title")
-  
-  MS.require([JPEG, PNG] image)
-  MS.return([JPEG, PNG] image)
+  return [JPEG, PNG] image
 }
 ```
 
@@ -112,9 +95,9 @@ MS EvaluateImage extends TakePhoto {
 ```
 Service CityHealth {
   
-  global.incentiveCost = 1000
+  global.incentiveCost = "1000"
   global.expiration = "23:00:00 04/05/2018"
-  global.numberOfData = 1000
+  global.numberOfData = "1000"
   global.location = ["US.Virginia", "US.Washinton.DC"]
   
   MS: TakePhoto() extends MobilePhone.TakePhotoWithTag {
