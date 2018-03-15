@@ -36,14 +36,6 @@ The original MOLE assumes that the MS is not human involved. Therefore, no addit
 
 ## TODO
 
-* Server and access point
-* Multiple data type return
-* Multiple data return
-* Location expression
-* Location type: city name, latitude and longitude, and access point id.
-* Format of global input
-* Is the syntax consistant? How to differentiate is, isNot, eq, greaterThan etc.?
-
 ## Definition
 
 ### Global Input
@@ -209,16 +201,33 @@ Service AirQualityMonitering {
 
 ## EBNF of Extended MOLE
 
+global.incentiveCost = "1000"
+global.expiration = "23:00:00 04/05/2018"
+global.numberOfData = "1000"
+global.location = ["US.Virginia", "US.Washinton.DC"]
+global.reward = "FixedPrice"/"ReverseAuction"
+
 ```
 <Service_Suite> ::= <Service_Identity> <Service_Description>
-<Service_Identity> ::= "Service " <String>
-<Service_Description> ::= "{" {<Service_Parameter>} <Microservice_Invocations> {<Microservice_Invocations> "}"
-<Service_Parameter> ::= <Parameter_Name> ": " <Parameter_Value>
+<Service_Identity> ::= 'Service ' <String>
+<Service_Description> ::= '{' {<Service_Parameter>} <Microservice_Invocations> {<Microservice_Invocations> '}'
 
-<Microservice_Invocations> ::= "MS: " <MS_Identity> "{" [<MS_Detail>]{<MS_Detail>} "}"
+// Global Input
+<Service_Parameter> ::= 'global.'(<Parameter_Incentive> | <Parameter_Expiration> | <Parameter_Number> | <Parameter_Location> | <Parameter_Reward>)
+<Parameter_Incentive> ::= 'incentiveCost = "' <Integer> '"'
+<Parameter_Expiration> ::= 'expiration = "' <Date> '"'
+<Parameter_Number> ::= 'numberOfData = "' <Integer> '"'
+<Parameter_Location> ::= 'location = ' (<Location> | '[' <Location> {',' <Location>} ']')
+<Location> ::= '"' <Country_Code> ['.' <State_Name> ['.' <City_Name>]] '"'
+<Parameter_Reward> ::= '"FixedPriccce"' | '"ReverseAuction"'
+
+// Microservice
+<Microservice_Invocations> ::= 'MS: ' <MS_Identity> '(' [<Microservice_Parameter>]+ ') extends ' <MS_Identity> '{' [<MS_Detail>]+ '}'
 <MS_Identity> ::= <String>
-<MS_Detail>::= <Device_Selection>|<Information_Params>|<Data_Params>|<After_Execution_Rules>
+<Microservice_Parameter> ::= <Data_Type> <Variable_Name>
+<MS_Detail>::= <Device_Selection>|<Information_Params>|<After_Execution_Rules>
 
+// Microservice Detail
 <Device_Selection> ::= <Device_Selection_Device>|<Device_Selection_Version>|<Device_Selection_Quality>
 <Device_Selection_Device> ::= "select.device: " <String>
 <Device_Selection_Version> ::= "select.minimumVersion: " <String>
@@ -227,7 +236,7 @@ Service AirQualityMonitering {
 <Information_Params> ::= <Information_Params_Human>|<Information_Params_Location>|<Information_Params_Instruction>|<Information_Params_Title>
 <Information_Params_Human> ::= "info.humanInvolved: " <Boolean>
 <Information_Params_Location> ::= "info.location: " (<Location>|("[" <Location>{", " <Location>} "]"))
-<Location> ::= <Country_Code> ["." <State_Name> ["." <City_Name>]]
+
 <Information_Params_Instruction> ::= "info.instruction: " <File_Path>
 <Information_Params_Title> ::= "info.title: " <String>
 
