@@ -228,10 +228,11 @@ global.reward = "FixedPrice"/"ReverseAuction"
 <MS_Detail>::= <Device_Selection>|<Information_Params>|<After_Execution_Rules>
 
 // Microservice Detail
-<Device_Selection> ::= <Device_Selection_Device>|<Device_Selection_Version>|<Device_Selection_Quality>
-<Device_Selection_Device> ::= "select.device: " <String>
-<Device_Selection_Version> ::= "select.minimumVersion: " <String>
-<Device_Selection_Quality> ::= "select.minimumQuality: " <String>
+<Device_Selection> ::= <Device_Selection_Device>|<Device_Selection_System>|<Device_Selection_Version>|<Device_Selection_User>
+<Device_Selection_Device> ::= "select.device = " <String>
+<Device_Selection_Device> ::= "select.system = " <String>
+<Device_Selection_Version> ::= "select.version = " <String>
+<Device_Selection_User> ::= "select.user.reputation = " <String>
 
 <Information_Params> ::= <Information_Params_Human>|<Information_Params_Location>|<Information_Params_Instruction>|<Information_Params_Title>
 <Information_Params_Human> ::= "info.humanInvolved: " <Boolean>
