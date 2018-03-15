@@ -200,12 +200,6 @@ Service AirQualityMonitering {
 
 ## EBNF of Extended MOLE
 
-global.incentiveCost = "1000"
-global.expiration = "23:00:00 04/05/2018"
-global.numberOfData = "1000"
-global.location = ["US.Virginia", "US.Washinton.DC"]
-global.reward = "FixedPrice"/"ReverseAuction"
-
 ```
 <Service_Suite> ::= <Service_Identity> <Service_Description>
 <Service_Identity> ::= 'Service ' <String>
@@ -213,43 +207,34 @@ global.reward = "FixedPrice"/"ReverseAuction"
 
 // Global Input
 <Service_Parameter> ::= 'global.'(<Parameter_Incentive> | <Parameter_Expiration> | <Parameter_Number> | <Parameter_Location> | <Parameter_Reward>)
-<Parameter_Incentive> ::= 'incentiveCost = "' <Integer> '"'
-<Parameter_Expiration> ::= 'expiration = "' <Date> '"'
-<Parameter_Number> ::= 'numberOfData = "' <Integer> '"'
+<Parameter_Incentive> ::= 'incentiveCost = ' <Integer>
+<Parameter_Expiration> ::= 'expiration = ' <Date>
+<Parameter_Number> ::= 'numberOfData = ' <Integer>
 <Parameter_Location> ::= 'location = ' (<Location> | '[' <Location> {',' <Location>} ']')
 <Location> ::= '"' <Country_Code> ['.' <State_Name> ['.' <City_Name>]] '"'
 <Parameter_Reward> ::= '"FixedPriccce"' | '"ReverseAuction"'
 
 // Microservice
-<Microservice_Invocations> ::= 'MS: ' <MS_Identity> '(' [<Microservice_Parameter>]+ ') extends ' <MS_Identity> '{' [<MS_Detail>]+ '}'
+<Microservice_Invocations> ::= 'MS: ' <MS_Identity> '(' [<Microservice_Parameter>]+ ') with ' (<MS_Identity>|<Basic_MS>) '{' [<MS_Detail>]+ '}'
 <MS_Identity> ::= <String>
+<Basic_MS> ::= <String>'.'<String>
 <Microservice_Parameter> ::= <Data_Type> <Variable_Name>
-<MS_Detail>::= <Device_Selection>|<Information_Params>|<After_Execution_Rules>
+<MS_Detail>::= <Device_Selection>|<Set_Params>|<After_Execution_Rules>
 
 // Microservice Detail
 <Device_Selection> ::= <Device_Selection_Device>|<Device_Selection_System>|<Device_Selection_Version>|<Device_Selection_User>
-<Device_Selection_Device> ::= "select.device = " <String>
-<Device_Selection_Device> ::= "select.system = " <String>
-<Device_Selection_Version> ::= "select.version = " <String>
-<Device_Selection_User> ::= "select.user.reputation = " <String>
+<Device_Selection_Device> ::= 'select.device = ' <String>
+<Device_Selection_Device> ::= 'select.system = ' <String>
+<Device_Selection_Version> ::= 'select.version = ' <String>
+<Device_Selection_User> ::= 'select.user.reputation = ' <String>
 
-<Information_Params> ::= <Information_Params_Human>|<Information_Params_Location>|<Information_Params_Instruction>|<Information_Params_Title>
-<Information_Params_Human> ::= "info.humanInvolved: " <Boolean>
-<Information_Params_Location> ::= "info.location: " (<Location>|("[" <Location>{", " <Location>} "]"))
+<Set_Params> ::= <Set_Instruction>|<Set_Title>|<Set_Sampling>
+<Set_Instruction> ::= 'set.instruction = ' <String>
+<Set_Title> ::= 'set.title = ' <String>
+<Set_Sampling> ::= 'set.sampling' <Float>
 
-<Information_Params_Instruction> ::= "info.instruction: " <File_Path>
-<Information_Params_Title> ::= "info.title: " <String>
-
-<Data_Params> ::= <Data_Params_Require>|<Data_Params_Return>
-<Data_Params_Require> ::= "data.require: {" <Data_Params_Category>{"," <Data_Params_Category>} "}"
-<Data_Params_Return> ::= "data.return: {" <Data_Params_Category>{"," <Data_Params_Category>} "}"
-<Data_Params_Category> ::= <Data_Params_Category_Name> ": {" <Data_Parameter>{<Data_Parameter>} "}"
-<Data_Parameter> ::= <Data_Parameter_Name> ": " <Data_Parameter_Type>
-<Data_Parameter_Name> ::= <String>
-<Data_Parameter_Type> ::= <Data_Type>|<File_Type>
-
-<After_Execution_Rules> ::= "on." <Condition> ":" (<Redirection>|<Return>){"; " (<Redirection>|<Return>)}
-<Condition> ::= "success"|"fail"
-<Redirection> ::= (<MS_Identity> "(" (<Data_Parameter_Name>|"_"){", " (<Data_Parameter_Name>|"_")} ")")|"exit"
-<Return> ::= <Data_Parameter_Name>
+<After_Execution_Rules> ::= 'on.' <Condition> ':' (<Redirection>|<Return>)
+<Condition> ::= 'success'|'fail'|'success.inSample'|'success.outSample'
+<Redirection> ::= (<MS_Identity> '(' (<Microservice_Parameter> |'_'){', ' (<Microservice_Parameter> |'_')} ')')|'exit'
+<Return> ::= 'return ' <Microservice_Parameter>  {', ' <Microservice_Parameter>}
 ```
