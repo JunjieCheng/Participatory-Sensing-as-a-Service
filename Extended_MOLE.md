@@ -87,47 +87,45 @@ basic MS: TakePhoto {
 ## Example: City Health
 ```
 Service CityHealth {
-  
-  global.incentiveCost = "1000"
+
+  global.incentiveCost = 1000
   global.expiration = "23:00:00 04/05/2018"
-  global.numberOfData = "1000"
-  global.location = ["US.Virginia", "US.Washinton.DC"]
-  
-  MS: TakePhoto() extends MobilePhone.TakePhotoWithTag {
+  global.numberOfData = 1000
+  global.location = ["US.Virginia", "US.Washinton.DC"]
+
+  MS: TakePhoto() with MobilePhone.TakePhotoWithTag {
     select.system = "Android"
     select.version = "4.4+"
-    
-    info.instruction = “./README.xml”
-    info.title = “City Health”
-    info.reward = "0.5"
-    
-    on.success: EvaluatePhoto(JPEG image, String tag)
+
+    set.instruction = “./README.xml”
+    set.title = “City Health”
+    set.reward = 0.5
+
     on.fail: exit
   }
-  
-  MS: TakePhoto2() extends MobilePhone.TakePhotoWithTag {
-    select.system = "Android"
-    select.version = "4.4+"
+
+  MS: TakePhoto1() with TakePhoto {
+    set.sampling = 0.3
+    on.success.inSample: EvaluatePhoto(JPEG image, String tag)
+    on.success.outSample: return JPEG image, String tag
+
+  }
+
+  MS: TakePhoto2() with TakePhoto {
     select.user.reputation = "70+"
-    
-    info.instruction = “./README.xml”
-    info.title = “City Health”
-    info.reward = "0.5"
-    
     on.success: return JPEG image, String tag
-    on.fail: exit
   }
-  
-  MS: EvaluatePhoto(JPEG image, String tag) extends MobilePhone.EvaluatePhotoWithTag {
-    select.system = "Android"
-    select.verison = "4.4+"
+
+  MS: EvaluatePhoto(JPEG image, String tag) with MobilePhone.EvaluatePhotoWithTag {
+    select.system = "Android"
+    select.verison = "4.4+"
     select.device.differentAs("TakePhoto")
-    
-    info.instruction = “./README.xml”
-    info.title = “Evaluate City Health”
-    info.reward = "0.2"
-        
-    on.success: return JPEG image, String tag
+
+    set.instruction = “./README.xml”
+    set.title = “Evaluate City Health”
+    set.reward = 0.2
+
+    on.success: return JPEG image, String tag
     on.fail: exit
   }
 
