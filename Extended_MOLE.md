@@ -105,6 +105,7 @@ Service CityHealth {
   }
 
   MS: TakePhoto1() with TakePhoto {
+    set.user.reputation = "30-69"
     set.sampling = 0.3
     on.success.inSample: EvaluatePhoto(JPEG image, String tag)
     on.success.outSample: return JPEG image, String tag
