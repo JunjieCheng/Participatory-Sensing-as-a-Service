@@ -120,7 +120,7 @@ Service CityHealth {
   MS: EvaluatePhoto(JPEG image, String tag) with MobilePhone.EvaluatePhotoWithTag {
     select.system = "Android"
     select.verison = "4.4+"
-    select.device.differentAs("TakePhoto")
+    select.device.differentAs = "TakePhoto"
 
     set.instruction = “./README.xml”
     set.title = “Evaluate City Health”
