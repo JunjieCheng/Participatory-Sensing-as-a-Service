@@ -91,14 +91,14 @@ Service DigitRecognition {
     
     global.expiration = "23:00:00 04/05/2018"
     global.numberOfData = 10000
-    global.location = ["US.Virginia", "US.Washinton.DC"]
+    global.location = ["US.Virginia", "US.Washington.DC"]
 
     MS: TakePhoto() with MobilePhone.TakePhoto {
         select.system = "Android"
         select.version = "4.4+"
 
-        set.instruction = “./README.xml”
-        set.title = “City Health”
+        set.instruction = "./README.xml"
+        set.title = "Digit Recognition"
         set.reward = 0.5
 
         on.success: RecognizePhoto(JPEG image)
@@ -141,14 +141,14 @@ Service CityHealth {
   global.incentiveCost = 1000
   global.expiration = "23:00:00 04/05/2018"
   global.numberOfData = 1000
-  global.location = ["US.Virginia", "US.Washinton.DC"]
+  global.location = ["US.Virginia", "US.Washington.DC"]
 
   MS: TakePhoto() with MobilePhone.TakePhotoWithTag {
     select.system = "Android"
     select.version = "4.4+"
 
-    set.instruction = “./README.xml”
-    set.title = “City Health”
+    set.instruction = "./README.xml"
+    set.title = "City Health"
     set.reward = 0.5
 
     on.fail: exit
