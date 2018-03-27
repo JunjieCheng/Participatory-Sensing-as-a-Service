@@ -89,8 +89,8 @@ basic MS: TakePhoto {
 ```
 Service DigitRecognition {
     
-    global.incentiveCost = 1000
     global.expiration = "23:00:00 04/05/2018"
+    global.numberOfData = 10000
     global.location = ["US.Virginia", "US.Washinton.DC"]
 
     MS: TakePhoto() with MobilePhone.TakePhoto {
