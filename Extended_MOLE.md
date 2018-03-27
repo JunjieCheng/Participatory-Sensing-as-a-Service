@@ -84,6 +84,56 @@ basic MS: TakePhoto {
 }
 ```
 
+## Example: Digit Recognition
+
+```
+Service DigitRecognition {
+    
+    global.incentiveCost = 1000
+    global.expiration = "23:00:00 04/05/2018"
+    global.location = ["US.Virginia", "US.Washinton.DC"]
+
+    MS: TakePhoto() with MobilePhone.TakePhoto {
+        select.system = "Android"
+        select.version = "4.4+"
+
+        set.instruction = “./README.xml”
+        set.title = “City Health”
+        set.reward = 0.5
+
+        on.success: RecognizePhoto(JPEG image)
+        on.fail: exit
+    }
+    
+    MS: RecognizePhoto(JPEG image) with MobilePhone.RecognizeDigit {
+        set.reward = 0.1
+        
+        on.success: CheckLabel(JPEG image, String label)
+        on.fail: exit
+    }
+    
+    MS: CheckLabel(JPEG image, String label) with MobilePhone.EvaluatePhotoWithLabel {
+        select.system = "Android"
+        select.verison = "4.4+"
+
+        set.instruction = “./README.xml”
+        set.title = “Check Recognition Result”
+        set.reward = 0.1
+
+        on.success: return JPEG image, String label
+        on.fail: TrainModel(JPEG image, String label)
+    }
+    
+    MS: TrainModel(JPEG image, String label) with Device.TrainModel {
+        select.model = "DigitRecognition"
+        set.reward = 0.01
+        
+        on.success: exit
+        on.fail: exit
+    }
+}
+```
+
 ## Example: City Health
 ```
 Service CityHealth {
