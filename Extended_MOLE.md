@@ -102,14 +102,15 @@ Service DigitRecognition {
         set.reward = 0.5
 
         on.success: RecognizePhoto(JPEG image)
-        on.fail: exit
     }
     
     MS: RecognizePhoto(JPEG image) with MobilePhone.RecognizeDigit {
         set.reward = 0.1
-        
-        on.success: CheckLabel(JPEG image, String label)
-        on.fail: exit
+        
+        on.success: {
+            case ms.confident < 0.8: CheckLabel(JPEG image, String label)
+            case default: return JPEG image, String label
+        }
     }
     
     MS: CheckLabel(JPEG image, String label) with MobilePhone.EvaluatePhotoWithLabel {
@@ -120,16 +121,15 @@ Service DigitRecognition {
         set.title = “Check Recognition Result”
         set.reward = 0.1
 
-        on.success: return JPEG image, String label
-        on.fail: TrainModel(JPEG image, String label)
+        on.success: {
+            case ms.result == True: return JPEG image, String label
+            case default: TrainModel(JPEG image, String label)
+        }
     }
     
     MS: TrainModel(JPEG image, String label) with Device.TrainModel {
         select.model = "DigitRecognition"
         set.reward = 0.01
-        
-        on.success: exit
-        on.fail: exit
     }
 }
 ```
