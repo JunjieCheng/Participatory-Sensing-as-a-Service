@@ -104,11 +104,14 @@ Service DigitRecognition {
         on.success: RecognizePhoto(JPEG image)
     }
     
+    MS: Preprocess(JPEG image) with EdgeServer.PreprocessImage {
+        on.success:
+    
     MS: RecognizePhoto(JPEG image) with MobilePhone.RecognizeDigit {
         set.reward = 0.1
         
         on.success: {
-            case ms.confident < 0.8: CheckLabel(JPEG image, String label)
+            case ms.confident < 0.9: CheckLabel(JPEG image, String label)
             case default: return JPEG image, String label
         }
     }
